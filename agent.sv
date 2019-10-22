@@ -28,6 +28,5 @@ class agent extends uvm_agent;
         mon.req_port.connect(agt_req_port);
         mon.resp_port.connect(agt_resp_port);
         drv.seq_item_port.connect(sqr.seq_item_export);
-    endfunction
-    
+    endfunction    
 endclass: agent

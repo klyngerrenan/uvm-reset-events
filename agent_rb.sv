@@ -5,6 +5,8 @@ class agent_rb extends uvm_agent;
     driver_rb   drv;
     monitor_rb  mon;
 
+    event pre_set;
+
     uvm_analysis_port #(transaction_rb) agt_req_port;
 
     `uvm_component_utils(agent_rb)
@@ -27,9 +29,11 @@ class agent_rb extends uvm_agent;
         drv.seq_item_port.connect(sqr.seq_item_export);
     endfunction
 
-    task pre_reset_phase(uvm_phase phase);
-        phase.raise_objection(this);
+    task run_phase(uvm_phase phase);
+        forever begin
+        @(pre_set)
         sqr.stop_sequences();
-        phase.drop_objection(this);
-    endtask : pre_reset_phase
+        ->drv.reset_driver;
+    	end
+    endtask 
 endclass: agent_rb

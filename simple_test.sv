@@ -2,7 +2,7 @@ class simple_test extends uvm_test;
   env env_h;
   sequence_in seq;
   sequence_rb seq_rb;
-  bit reset;
+  bit reset, flag;
   int count_tr_reset;
 
   `uvm_component_utils(simple_test)
@@ -19,27 +19,34 @@ class simple_test extends uvm_test;
     seq_rb = sequence_rb::type_id::create("seq_rb", this);
   endfunction
 
-  task main_phase(uvm_phase phase);
+  task run_phase(uvm_phase phase);
     phase.raise_objection(this);
     env_h.mst.mon.count_tr_reset = count_tr_reset;
+    
     fork
-        seq_rb.start(env_h.mst_rb.sqr);
-        begin 
-            if (reset) begin 
-                repeat(3000) seq.start(env_h.mst.sqr);
-                phase.drop_objection(this);
-            end
+      forever begin
+        fork
+            seq_rb.start(env_h.mst_rb.sqr);
+            begin 
+                if (reset) begin 
+                    repeat(3000) seq.start(env_h.mst.sqr);
+                    phase.drop_objection(this);
+                end
 
-            if (!reset) begin 
-                repeat(count_tr_reset) seq.start(env_h.mst.sqr);
-                reset = 1;
+                if (!reset) begin 
+                    repeat(count_tr_reset) seq.start(env_h.mst.sqr);
+                    reset = 1;
+                end
             end
-        end
-
-        forever begin
-            @(negedge env_h.mst_rb.drv.vif.rst);
-            phase.jump(uvm_pre_reset_phase::get());
-        end
+        join
+      end
+      forever begin
+        @(negedge env_h.mst_rb.drv.vif.rst);
+        ->env_h.mst_rb.pre_set;
+        ->env_h.mst.drv.reset_driver;
+        ->env_h.sb.rfm.reset_refmod;
+        $display("JUMP",);
+      end
     join
   endtask
 
