@@ -1,2 +1,2 @@
-# uvm-phase-jumping
-Simple UVM phase jumping
+# uvm-reset-events
+Simple UVM with reset made by events
