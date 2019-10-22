@@ -51,8 +51,6 @@ class refmod extends uvm_component;
         fork
             forever begin
                 @begin_refmodtask;
-                $display("REG3  =  %h",registers[3] );
-                $display("REG2  =  %h",registers[2] );
                 tr_out = transaction_out::type_id::create("tr_out", this);
                 tr_out.data_o = my_ula(tr_in.data_i,registers[tr_in.reg_sel],tr_in.instru);
                 out.write(tr_out);

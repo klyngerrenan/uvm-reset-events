@@ -31,9 +31,9 @@ class agent_rb extends uvm_agent;
 
     task run_phase(uvm_phase phase);
         forever begin
-        @(pre_set)
-        sqr.stop_sequences();
-        ->drv.reset_driver;
+	        @(pre_set)
+	        sqr.stop_sequences();
+	        ->drv.reset_driver;
     	end
     endtask 
 endclass: agent_rb
