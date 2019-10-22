@@ -5,7 +5,7 @@ class driver_rb extends uvm_driver #(transaction_rb);
     rb_vif vif;
     event begin_record, end_record;
     transaction_rb tr;
-    bit item_done;
+    bit item_done, break_driver;
 
     event reset_driver, get_and_drive2;
 
@@ -30,6 +30,7 @@ class driver_rb extends uvm_driver #(transaction_rb);
     task reset();
     	forever begin
 	    	@(reset_driver);
+	    	break_driver = 1;
 	    	wait(vif.rst===0);
 	      	item_done = 1'b0;
 		    vif.data_i  <= '0;
@@ -37,6 +38,7 @@ class driver_rb extends uvm_driver #(transaction_rb);
 		    vif.valid_i <= '0;
 		    tr = null;
 		    @(posedge vif.clk iff vif.rst);
+		    break_driver = 0;
 		    ->get_and_drive2;
 		end
     endtask 
@@ -44,8 +46,8 @@ class driver_rb extends uvm_driver #(transaction_rb);
     task get_and_drive ();
     	forever begin
           	@get_and_drive2;
-	        fork
 	            forever begin
+	            	if (break_driver) break;
 	                @(posedge vif.clk) begin
 
 	                    item_done = 1'b0;
@@ -71,8 +73,6 @@ class driver_rb extends uvm_driver #(transaction_rb);
 	                    end
 	                end
 	            end
-	            @(reset_driver);
-	        join_any
 	    end
     endtask
 endclass

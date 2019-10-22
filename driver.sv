@@ -51,7 +51,6 @@ class driver extends uvm_driver #(transaction_in);
             	forever begin
             		if(break_drive) break;
 	                @(posedge vif.clk) begin
-        			// $display("first_tr = %h",tr.data_i);
 	                    item_done = 1'b0;
 	                    vif.valid_i = 1'b0;
 	                    if(tr && (vif.valid_o || first_tr)) begin
@@ -72,7 +71,6 @@ class driver extends uvm_driver #(transaction_in);
 	                    end
 
 	                    if (item_done || !tr) begin
-	                    	$display("Pedro",);
 	                      seq_item_port.get_next_item(tr);
 	                    end
 	                end
